@@ -10,7 +10,14 @@ router.get('/soccer-leagues', async (req, res) => {
                 'x-rapidapi-key': process.env.API_KEY
             }
         });
-        res.json(response.data);
+        // extracting specific data from the response:
+        const leagues = response.data.response.map(league => ({
+            id: league.league.id,
+            name: league.league.name,
+            country: league.country.name,
+            season: league.seasons[0].year 
+        }));
+        res.json(leagues); // Send the extracted data back to the client
     } catch (error) {
         console.error('Error fetching soccer league data:', error);
         res.status(500).send('Server error');
