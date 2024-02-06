@@ -19,7 +19,7 @@ SoccerLeague.use((req, res, next) => {
 SoccerLeague.use('/leagues', leaguesRoutes)
 
 //Connect to DB
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URIs)
     .then(() => {
         //listen for requests
         SoccerLeague.listen(process.env.PORT, () =>{
