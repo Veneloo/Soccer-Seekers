@@ -1,28 +1,47 @@
 const express = require('express')
 const router = express.Router()
 const axios = require('axios')
+const Leagues = require('../models/leagueModel')
 
-// Route to get soccer league data
-router.get('/soccer-leagues', async (req, res) => {
+
+
+
+
+
+router.get('/league-display', async (req, res) => {
+    const sort = req.query.sort; // Correctly extract the 'sort' query parameter
+    const options = {
+        method: 'GET',
+        url: 'https://api-football-v1.p.rapidapi.com/v3/leagues',
+        params: {current: 'true'},
+        headers: {
+            'X-RapidAPI-Key': process.env.API_KEY,
+            'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com'
+        }
+    };
     try {
-        const response = await axios.get('https://api-football-v1.p.rapidapi.com/v3/leagues', {
-            headers: {
-                'x-rapidapi-key': process.env.API_KEY
-            }
-        });
-        // extracting specific data from the response:
-        const leagues = response.data.response.map(league => ({
-            id: league.league.id,
+        const response = await axios.request(options);
+        let leagues = response.data.response.map(league => ({
             name: league.league.name,
             country: league.country.name,
-            season: league.seasons[0].year 
         }));
-        res.json(leagues); // Send the extracted data back to the client
+
+        // Sort based on query parameter
+        if (sort === 'country') {
+            leagues.sort((a, b) => a.country.localeCompare(b.country) || a.name.localeCompare(b.name));
+        } else { // Default to alphabetical sort by name
+            leagues.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        res.json(leagues);
     } catch (error) {
-        console.error('Error fetching soccer league data:', error);
+        console.error('Error fetching soccer leagues:', error);
         res.status(500).send('Server error');
     }
 });
+
+
+
 //GET a single league
 router.get('/:id', (req, res) => {
     res.json({mssg: 'GET a single league'})
@@ -30,6 +49,7 @@ router.get('/:id', (req, res) => {
 
 //POST a new league
 router.post('/', (req, res) => {
+    const {id, name, country, season} = req.body
     res.json({mssg: 'POST a new league'})
 })
 

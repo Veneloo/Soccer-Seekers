@@ -1,13 +1,15 @@
 require('dotenv').config()
-
+const cors = require('cors');
 const express = require('express')
 const mongoose = require('mongoose')
 const leaguesRoutes = require('./routes/leagueroutes')
 
 //express app
 const SoccerLeague = express()
+SoccerLeague.use(cors());
 
 //middleware
+SoccerLeague.use(express.static('public'))
 SoccerLeague.use(express.json())
 
 SoccerLeague.use((req, res, next) => {
@@ -15,8 +17,15 @@ SoccerLeague.use((req, res, next) => {
     next()
 })
 
+
+// Welcome route
+SoccerLeague.get('/', (req, res) => {
+    res.send('Welcome to the Soccer League App!');
+  });
+
+
 //routes
-SoccerLeague.use('/leagues', leaguesRoutes)
+SoccerLeague.use('/welcome', leaguesRoutes)
 
 //Connect to DB
 mongoose.connect(process.env.MONGO_URIs)
