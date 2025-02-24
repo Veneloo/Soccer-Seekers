@@ -23,12 +23,14 @@ app.get('/', (req, res) => {
 // Fetch player profile from API Football
 app.get('/api/players/:id', async (req, res) => {
   const playerId = req.params.id;
+  const season = req.query.season || '2025'
 
   const options = {
     method: 'GET',
     url: 'https://api-football-v1.p.rapidapi.com/v3/players', // Updated API endpoint
     params: {
       id: playerId,
+      season: season,
     },
     headers: {
       'x-rapidapi-key': process.env.FOOTBALL_API_KEY, // Use environment variable

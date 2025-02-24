@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 function SearchBar({ onSearch }) {
-  const [query, setQuery] = useState('');
+  const [playerId, setPlayerId] = useState('');
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  const handleSearch = async () => {
     try {
-      const response = await fetch(`/api/players/${query}`);
-      const data = await response.json();
-      onSearch(data.response[0]); // Pass the player data to the parent component
+      const response = await axios.get(`http://localhost:3001/api/players/${playerId}?season=2025`);
+      onSearch(response.data);  // explicitly pass fetched data up to App.js
     } catch (error) {
-      console.error('Error fetching player data:', error);
+      console.error("Error fetching player:", error);
     }
   };
 
   return (
-    <form onSubmit={handleSearch} className="mb-4">
+    <div className="flex gap-2">
       <input
         type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        value={playerId}
+        onChange={(e) => setPlayerId(e.target.value)}
         placeholder="Enter player ID"
         className="p-2 border rounded"
       />
-      <button type="submit" className="ml-2 p-2 bg-blue-500 text-white rounded">
+      <button onClick={handleSearch} className="p-2 bg-blue-500 text-white rounded">
         Search
       </button>
-    </form>
+    </div>
   );
 }
 
